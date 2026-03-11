@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Project } from '../../data/projects'
+import { getProjectIcon } from '../../data/projects'
 
 interface Props {
   project: Project
@@ -7,22 +9,39 @@ interface Props {
 }
 
 export default function ProjectCard({ project, index }: Props) {
+  const [iconError, setIconError] = useState(false)
+  const iconUrl = getProjectIcon(project)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="m-2 group rounded-2xl border border-white/10 bg-[#111111]/90 p-10 flex flex-col gap-5 hover:bg-[#161616]/90 hover:border-white/20 transition-all duration-300"
+      className="group rounded-2xl border border-white/10 bg-[#111111]/90 p-6 flex flex-col gap-4 hover:bg-[#161616]/90 hover:border-white/20 transition-all duration-300"
     >
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-xl font-semibold text-white">{project.name}</h3>
-        <div className="flex gap-3 shrink-0">
+        <div className="flex items-center gap-3">
+          {iconUrl && !iconError ? (
+            <img
+              src={iconUrl}
+              alt=""
+              className="w-6 h-6 rounded"
+              onError={() => setIconError(true)}
+            />
+          ) : (
+            <svg className="w-6 h-6 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+            </svg>
+          )}
+          <h3 className="text-lg font-semibold text-white">{project.name}</h3>
+        </div>
+        <div className="flex gap-2.5 shrink-0">
           {project.url && (
             <a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/30 hover:text-white transition-colors"
+              className="text-white/20 hover:text-white transition-colors"
               aria-label="Live site"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -35,7 +54,7 @@ export default function ProjectCard({ project, index }: Props) {
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/30 hover:text-white transition-colors"
+              className="text-white/20 hover:text-white transition-colors"
               aria-label="GitHub"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -48,7 +67,7 @@ export default function ProjectCard({ project, index }: Props) {
               href={project.twitter}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/30 hover:text-white transition-colors"
+              className="text-white/20 hover:text-white transition-colors"
               aria-label="X / Twitter"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
