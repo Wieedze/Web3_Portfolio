@@ -1,4 +1,5 @@
 import PixelBlast from './components/Background/PixelBlast'
+import ColorSpotlight from './components/Cursor/ColorSpotlight'
 import Hero from './components/Hero/Hero'
 import ProjectGrid from './components/Projects/ProjectGrid'
 import Footer from './components/Footer/Footer'
@@ -17,6 +18,8 @@ function App() {
           patternDensity={0.85}
         />
       </div>
+
+      <ColorSpotlight />
 
       <Hero />
       <ProjectGrid />
