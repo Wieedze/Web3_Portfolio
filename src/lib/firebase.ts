@@ -21,7 +21,8 @@ export interface LocationData {
 }
 
 export function writeLocation(data: LocationData) {
-  return set(locationRef, data)
+  const clean = { lat: data.lat, lng: data.lng, timestamp: data.timestamp, ...(data.message ? { message: data.message } : {}) }
+  return set(locationRef, clean)
 }
 
 export function onLocationChange(callback: (data: LocationData | null) => void) {
