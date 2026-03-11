@@ -1,5 +1,6 @@
 import PixelBlast from './components/Background/PixelBlast'
 import Hero from './components/Hero/Hero'
+import ProjectGrid from './components/Projects/ProjectGrid'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       </div>
 
       <Hero />
+      <ProjectGrid />
     </div>
   )
 }
