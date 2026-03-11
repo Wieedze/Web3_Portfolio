@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 py-8 px-6">
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/30">
+    <footer className="w-full max-w-6xl border-t border-white/5 py-8 px-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/30">
         <span>Built for EthCC[9] — Cannes 2026</span>
 
         <div className="flex items-center gap-6">

@@ -5,6 +5,19 @@ export interface Project {
   url?: string
   github?: string
   twitter?: string
+  icon?: string
+}
+
+export function getProjectIcon(project: Project): string {
+  if (project.icon) return project.icon
+  if (project.url) {
+    const domain = new URL(project.url).hostname
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+  }
+  if (project.github) {
+    return 'https://www.google.com/s2/favicons?domain=github.com&sz=32'
+  }
+  return ''
 }
 
 export const projects: Project[] = [

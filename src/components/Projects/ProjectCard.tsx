@@ -12,7 +12,7 @@ export default function ProjectCard({ project, index }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="group rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-7 flex flex-col gap-5 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-300"
+      className="m-2 group rounded-2xl border border-white/10 bg-[#111111]/90 p-10 flex flex-col gap-5 hover:bg-[#161616]/90 hover:border-white/20 transition-all duration-300"
     >
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-xl font-semibold text-white">{project.name}</h3>

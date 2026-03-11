@@ -1,5 +1,4 @@
 import PixelBlast from './components/Background/PixelBlast'
-import ColorSpotlight from './components/Cursor/ColorSpotlight'
 import Hero from './components/Hero/Hero'
 import ProjectGrid from './components/Projects/ProjectGrid'
 import Footer from './components/Footer/Footer'
@@ -19,11 +18,11 @@ function App() {
         />
       </div>
 
-      <ColorSpotlight />
-
-      <Hero />
-      <ProjectGrid />
-      <Footer />
+      <div className="flex flex-col items-center">
+        <Hero />
+        <ProjectGrid />
+        <Footer />
+      </div>
     </div>
   )
 }
