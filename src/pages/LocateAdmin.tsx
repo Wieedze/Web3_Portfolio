@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { writeLocation } from '../lib/firebase'
+import { writeLocation, clearLocation } from '../lib/firebase'
 
 const PIN = import.meta.env.VITE_LOCATE_PIN || '1234'
 
@@ -42,6 +42,7 @@ export default function LocateAdmin() {
       navigator.geolocation.clearWatch(watchId)
       setWatchId(null)
     }
+    clearLocation()
     setTracking(false)
   }, [watchId])
 

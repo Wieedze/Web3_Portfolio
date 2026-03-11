@@ -1,12 +1,21 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import useENS from '../../hooks/useENS'
+import { onLocationChange } from '../../lib/firebase'
 
 const LiveLocationModal = lazy(() => import('../LiveLocation/LiveLocationModal'))
 
 export default function Hero() {
   const ens = useENS('wieedze.eth')
   const [showMap, setShowMap] = useState(false)
+  const [isLive, setIsLive] = useState(false)
+
+  useEffect(() => {
+    const unsubscribe = onLocationChange((data) => {
+      setIsLive(data !== null && Date.now() - data.timestamp < 30 * 60 * 1000)
+    })
+    return () => unsubscribe()
+  }, [])
 
   return (
     <section className="w-full max-w-6xl flex flex-col items-center justify-center pt-24 pb-12 px-8">
@@ -20,8 +29,8 @@ export default function Hero() {
           onClick={() => setShowMap(true)}
           className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/10 bg-[#111111]/90 text-sm text-white/70 hover:bg-[#161616]/90 hover:border-white/20 transition-all cursor-pointer"
         >
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          Meet me at EthCC — Cannes
+          <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+          {isLive ? 'Meet me at EthCC — Cannes' : 'Currently offline — EthCC Cannes'}
         </button>
 
         <a

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getDatabase, ref, onValue, set } from 'firebase/database'
+import { getDatabase, ref, onValue, set, remove } from 'firebase/database'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -23,6 +23,10 @@ export interface LocationData {
 export function writeLocation(data: LocationData) {
   const clean = { lat: data.lat, lng: data.lng, timestamp: data.timestamp, ...(data.message ? { message: data.message } : {}) }
   return set(locationRef, clean)
+}
+
+export function clearLocation() {
+  return remove(locationRef)
 }
 
 export function onLocationChange(callback: (data: LocationData | null) => void) {
