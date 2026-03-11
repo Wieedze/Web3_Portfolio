@@ -10,13 +10,13 @@ const PRIVATE_KEY = defineString('PRIVATE_KEY')
 const RPC_URL = defineString('RPC_URL', { default: 'https://rpc.intuition.systems' })
 const VAULT_ID = defineString('VAULT_ID')
 
-// SofiaFeeProxy ABI — only the deposit function we need
-const FEE_PROXY_ABI = [
-  'function deposit(address receiver, bytes32 termId, uint256 curveId, uint256 minShares) external payable returns (uint256 shares)',
+// MultiVault ABI — only the depositTriple function we need
+const MULTIVAULT_ABI = [
+  'function depositTriple(address receiver, uint256 id) external payable returns (uint256 shares)',
 ]
 
-const FEE_PROXY_ADDRESS = '0x26F81d723Ad1648194FAA4b7e235105Fd1212c6c'
-const DEPOSIT_AMOUNT = ethers.parseEther('0.01') // 0.01 TRUST min deposit
+const MULTIVAULT_ADDRESS = '0x6E35cF57A41fA15eA0EaE9C33e751b01A784Fe7e'
+const DEPOSIT_AMOUNT = ethers.parseEther('0.1') // 0.1 TRUST
 
 export const claimConnection = onCall(
   { cors: true, maxInstances: 10 },
@@ -40,22 +40,13 @@ export const claimConnection = onCall(
     const provider = new ethers.JsonRpcProvider(RPC_URL.value())
     const wallet = new ethers.Wallet(PRIVATE_KEY.value(), provider)
 
-    // Calculate total cost: deposit + fees
-    // FeeProxy takes fees from msg.value, so we send more than the deposit amount
-    // Fixed fee (0.1 TRUST) + percentage fee (5%) on top of deposit
-    const fixedFee = ethers.parseEther('0.1')
-    const percentageFee = DEPOSIT_AMOUNT * BigInt(5) / BigInt(100) // 5%
-    const totalCost = DEPOSIT_AMOUNT + fixedFee + percentageFee
-
-    const feeProxy = new ethers.Contract(FEE_PROXY_ADDRESS, FEE_PROXY_ABI, wallet)
+    const multiVault = new ethers.Contract(MULTIVAULT_ADDRESS, MULTIVAULT_ABI, wallet)
 
     try {
-      const tx = await feeProxy.deposit(
+      const tx = await multiVault.depositTriple(
         normalizedAddress, // receiver — the visitor gets the shares
-        VAULT_ID.value(),  // termId — the triple vault
-        1,                 // curveId — linear bonding curve
-        0,                 // minShares — no slippage protection needed for small amounts
-        { value: totalCost }
+        VAULT_ID.value(),  // id — the triple vault
+        { value: DEPOSIT_AMOUNT }
       )
 
       const receipt = await tx.wait()
