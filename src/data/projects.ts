@@ -38,13 +38,6 @@ export const projects: Project[] = [
     url: 'https://board-sofia.intuition.box/',
   },
   {
-    name: 'Sofia OG',
-    description:
-      'OG image generator for Sofia — dynamic social previews for sharing on X.',
-    tags: ['Tool', 'OG Images'],
-    github: 'https://github.com/Wieedze/sofia-og',
-  },
-  {
     name: 'Sofia API',
     description:
       'Secure OAuth token exchange API for the Sofia Chrome extension.',

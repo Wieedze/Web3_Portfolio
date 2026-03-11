@@ -1,59 +1,81 @@
+import { useState, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
+import useENS from '../../hooks/useENS'
+
+const LiveLocationModal = lazy(() => import('../LiveLocation/LiveLocationModal'))
 
 export default function Hero() {
+  const ens = useENS('wieedze.eth')
+  const [showMap, setShowMap] = useState(false)
+
   return (
-    <section className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+    <section className="w-full max-w-6xl flex flex-col items-center justify-center pt-24 pb-12 px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col items-center gap-6"
+        className="w-full flex flex-col items-center gap-6"
       >
-        <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/10 bg-[#111111]/90 text-sm text-white/70">
+        <button
+          onClick={() => setShowMap(true)}
+          className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/10 bg-[#111111]/90 text-sm text-white/70 hover:bg-[#161616]/90 hover:border-white/20 transition-all cursor-pointer"
+        >
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          Meet me at EthCC[9] — Cannes
-        </span>
+          Meet me at EthCC — Cannes
+        </button>
 
         <a
           href="https://app.ens.domains/wieedze.eth"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:opacity-80 transition-opacity"
+          className="w-full"
         >
-          <h1 className="text-6xl sm:text-8xl font-bold tracking-tight text-white">
-            wieedze<span className="text-white/40">.eth</span>
-          </h1>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 bg-[#111111]/90 border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all"
+          >
+            {ens.loading ? (
+              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl bg-white/5 animate-pulse shrink-0" />
+            ) : ens.avatar ? (
+              <img
+                src={ens.avatar}
+                alt={ens.name}
+                className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shrink-0 border border-white/10"
+              />
+            ) : (
+              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl bg-white/5 shrink-0 flex items-center justify-center text-4xl text-white/20">
+                ?
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3 text-center sm:text-left">
+              {ens.loading ? (
+                <>
+                  <div className="h-12 w-48 bg-white/5 rounded-lg animate-pulse" />
+                  <div className="h-6 w-64 bg-white/5 rounded-lg animate-pulse" />
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white break-all">
+                    {ens.name}
+                  </h1>
+                  <p className="text-lg text-white/40">
+                    Every action leaves a record.
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
         </a>
-
-        <p className="max-w-lg text-xl text-white/50">
-          Building verifiable identity & Web3 tooling on Intuition
-        </p>
-
-        <div className="flex gap-5 mt-6">
-          <a
-            href="https://github.com/Wieedze"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl border border-white/10 bg-[#111111]/90 text-base text-white/80 hover:bg-[#161616]/90 hover:border-white/20 transition-all"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-            GitHub
-          </a>
-          <a
-            href="https://x.com/0xSofia3"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl border border-white/10 bg-[#111111]/90 text-base text-white/80 hover:bg-[#161616]/90 hover:border-white/20 transition-all"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            @0xSofia3
-          </a>
-        </div>
       </motion.div>
+
+      {showMap && (
+        <Suspense fallback={null}>
+          <LiveLocationModal onClose={() => setShowMap(false)} />
+        </Suspense>
+      )}
     </section>
   )
 }
