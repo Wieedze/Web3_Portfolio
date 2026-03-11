@@ -3,6 +3,8 @@ import { writeLocation, clearLocation } from '../lib/firebase'
 
 const PIN = import.meta.env.VITE_LOCATE_PIN || '1234'
 
+const MAX_ATTEMPTS = 3
+
 export default function LocateAdmin() {
   const [authed, setAuthed] = useState(false)
   const [pin, setPin] = useState('')
@@ -11,6 +13,8 @@ export default function LocateAdmin() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [watchId, setWatchId] = useState<number | null>(null)
+  const [attempts, setAttempts] = useState(0)
+  const [locked, setLocked] = useState(() => sessionStorage.getItem('locate_locked') === 'true')
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
@@ -64,6 +68,45 @@ export default function LocateAdmin() {
     }
   }, [message, tracking, coords])
 
+  const handlePinSubmit = useCallback(() => {
+    if (pin === PIN) {
+      setAuthed(true)
+      setError(null)
+    } else {
+      const next = attempts + 1
+      setAttempts(next)
+      setError(`Wrong PIN (${next}/${MAX_ATTEMPTS})`)
+      setPin('')
+      if (next >= MAX_ATTEMPTS) {
+        setLocked(true)
+        sessionStorage.setItem('locate_locked', 'true')
+      }
+    }
+  }, [pin, attempts])
+
+  if (locked) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
+        <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center">
+          <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+            <svg className="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-red-400">Access Denied</h1>
+          <p className="text-white/40 text-sm leading-relaxed">
+            Too many failed attempts. This incident has been logged.
+          </p>
+          <div className="mt-4 px-4 py-2 rounded-lg bg-red-500/5 border border-red-500/10">
+            <p className="text-xs text-red-400/60 font-mono">
+              IP and device fingerprint recorded
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!authed) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
@@ -74,11 +117,11 @@ export default function LocateAdmin() {
             placeholder="PIN"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && pin === PIN && setAuthed(true)}
+            onKeyDown={(e) => e.key === 'Enter' && handlePinSubmit()}
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-center text-2xl tracking-widest focus:outline-none focus:border-white/30"
           />
           <button
-            onClick={() => pin === PIN ? setAuthed(true) : setError('Wrong PIN')}
+            onClick={handlePinSubmit}
             className="w-full py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
           >
             Enter
