@@ -10,9 +10,9 @@ const PRIVATE_KEY = defineString('PRIVATE_KEY')
 const RPC_URL = defineString('RPC_URL', { default: 'https://rpc.intuition.systems' })
 const VAULT_ID = defineString('VAULT_ID')
 
-// MultiVault ABI — only the depositTriple function we need
+// MultiVault ABI — deposit function (same signature for atoms and triples)
 const MULTIVAULT_ABI = [
-  'function depositTriple(address receiver, uint256 id) external payable returns (uint256 shares)',
+  'function deposit(address receiver, bytes32 termId, uint256 curveId, uint256 minShares) external payable returns (uint256 shares)',
 ]
 
 const MULTIVAULT_ADDRESS = '0x6E35cF57A41fA15eA0EaE9C33e751b01A784Fe7e'
@@ -43,9 +43,11 @@ export const claimConnection = onCall(
     const multiVault = new ethers.Contract(MULTIVAULT_ADDRESS, MULTIVAULT_ABI, wallet)
 
     try {
-      const tx = await multiVault.depositTriple(
+      const tx = await multiVault.deposit(
         normalizedAddress, // receiver — the visitor gets the shares
-        VAULT_ID.value(),  // id — the triple vault
+        VAULT_ID.value(),  // termId — the triple vault (bytes32)
+        1,                 // curveId — linear/voting curve
+        0,                 // minShares — no slippage protection
         { value: DEPOSIT_AMOUNT }
       )
 
