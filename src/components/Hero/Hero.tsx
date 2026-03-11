@@ -14,9 +14,16 @@ export default function Hero() {
           Meet me at EthCC[9] — Cannes
         </span>
 
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-white">
-          wieedze<span className="text-white/40">.box</span>
-        </h1>
+        <a
+          href="https://app.ens.domains/wieedze.eth"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:opacity-80 transition-opacity"
+        >
+          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-white">
+            wieedze<span className="text-white/40">.eth</span>
+          </h1>
+        </a>
 
         <p className="max-w-lg text-lg text-white/50">
           Building verifiable identity & Web3 tooling on Intuition
