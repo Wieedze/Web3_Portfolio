@@ -5,6 +5,7 @@ import ProjectGrid from './components/Projects/ProjectGrid'
 import Footer from './components/Footer/Footer'
 
 const LocateAdmin = lazy(() => import('./pages/LocateAdmin'))
+const ConnectPage = lazy(() => import('./pages/ConnectPage'))
 
 function App() {
   const [hash, setHash] = useState(window.location.hash)
@@ -19,6 +20,14 @@ function App() {
     return (
       <Suspense fallback={null}>
         <LocateAdmin />
+      </Suspense>
+    )
+  }
+
+  if (hash === '#connect') {
+    return (
+      <Suspense fallback={null}>
+        <ConnectPage />
       </Suspense>
     )
   }
