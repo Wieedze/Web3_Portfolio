@@ -1,6 +1,7 @@
 import PixelBlast from './components/Background/PixelBlast'
 import Hero from './components/Hero/Hero'
 import ProjectGrid from './components/Projects/ProjectGrid'
+import Footer from './components/Footer/Footer'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
 
       <Hero />
       <ProjectGrid />
+      <Footer />
     </div>
   )
 }
