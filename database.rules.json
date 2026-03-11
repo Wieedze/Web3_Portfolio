@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "location": {
+      ".read": true,
+      ".write": true
+    },
+    "claims": {
+      ".read": false,
+      ".write": false
+    },
+    "claimsCount": {
+      ".read": true,
+      ".write": false
+    }
+  }
+}
