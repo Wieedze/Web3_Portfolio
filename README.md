@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# wieedze.eth — Web3 Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal portfolio with live ENS resolution, project showcase, and real-time location sharing for conferences.
 
-Currently, two official plugins are available:
+**Live:** [wieedze.github.io/Web3_Portfolio](https://wieedze.github.io/Web3_Portfolio/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **ENS Profile** — Resolves `wieedze.eth` avatar and name dynamically via ensdata.net
+- **Project Showcase** — Glassmorphism cards with favicons, links, and tags
+- **Live Location** — "Meet me at EthCC" button opens a real-time map (Firebase + Leaflet) showing your GPS position at the conference
+- **Animated Background** — Three.js pixel blast effect
+- **Fully Responsive** — Mobile-first design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+| Layer | Tech |
+|-------|------|
+| Framework | React 19, TypeScript, Vite 7 |
+| Styling | Tailwind CSS 4, Framer Motion |
+| 3D | Three.js, Postprocessing |
+| Maps | Leaflet, React Leaflet |
+| Backend | Firebase Realtime Database |
+| Deploy | GitHub Pages (Actions) |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+cp .env.example .env   # fill in your Firebase keys
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Live Location
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The portfolio includes a real-time location feature for conferences:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Visitors click **"Meet me at EthCC"** → a map modal shows your live position
+2. You open `yoursite.com/#locate` on your phone → enter your PIN → start GPS tracking
+3. Your position is broadcast in real-time via Firebase to all visitors
+
+### Setup
+
+1. Create a Firebase project with Realtime Database
+2. Add your Firebase config to `.env` (see `.env.example`)
+3. Set a secret `VITE_LOCATE_PIN` for the admin page
+
+## Deployment
+
+Deployed automatically via GitHub Actions on push to `master`.
+
+### GitHub Secrets required
+
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_DATABASE_URL`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_LOCATE_PIN`
+
+Set them in **Settings → Secrets and variables → Actions**.
+
+## Project Structure
+
 ```
+src/
+├── components/
+│   ├── Background/PixelBlast.tsx    # Three.js animated background
+│   ├── Hero/Hero.tsx                # ENS card + EthCC button
+│   ├── LiveLocation/                # Map modal with real-time tracking
+│   ├── Projects/                    # Project cards grid
+│   └── Footer/Footer.tsx            # Contact section
+├── data/projects.ts                 # Project definitions
+├── hooks/useENS.ts                  # ENS resolution hook
+├── lib/firebase.ts                  # Firebase config + helpers
+└── pages/LocateAdmin.tsx            # Phone GPS tracker (admin)
+```
+
+## License
+
+MIT
