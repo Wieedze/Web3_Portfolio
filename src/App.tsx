@@ -1,4 +1,5 @@
 import PixelBlast from './components/Background/PixelBlast'
+import Hero from './components/Hero/Hero'
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
         />
       </div>
 
-      <h1 className="text-4xl text-white text-center pt-20">Portfolio</h1>
+      <Hero />
     </div>
   )
 }
