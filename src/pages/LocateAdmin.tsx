@@ -86,8 +86,14 @@ export default function LocateAdmin() {
 
   if (locked) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
-        <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center">
+      <div className="min-h-screen flex items-center justify-center px-6 relative">
+        <a
+          href="#"
+          className="absolute top-6 left-6 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-medium hover:bg-white/10 hover:text-white transition-all"
+        >
+          &larr; Back
+        </a>
+        <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center rounded-2xl bg-black/60 backdrop-blur-md p-8 border border-white/5">
           <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
             <svg className="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -109,8 +115,14 @@ export default function LocateAdmin() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
-        <div className="flex flex-col gap-4 w-full max-w-xs">
+      <div className="min-h-screen flex items-center justify-center px-6 relative">
+        <a
+          href="#"
+          className="absolute top-6 left-6 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-medium hover:bg-white/10 hover:text-white transition-all"
+        >
+          &larr; Back
+        </a>
+        <div className="flex flex-col gap-4 w-full max-w-xs rounded-2xl bg-black/60 backdrop-blur-md p-8 border border-white/5">
           <h1 className="text-2xl font-bold text-white text-center">Admin</h1>
           <input
             type="password"
@@ -133,7 +145,14 @@ export default function LocateAdmin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6 gap-6">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 relative">
+      <a
+        href="#"
+        className="absolute top-6 left-6 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-medium hover:bg-white/10 hover:text-white transition-all"
+      >
+        &larr; Back
+      </a>
+      <div className="flex flex-col items-center gap-6 w-full max-w-sm rounded-2xl bg-black/60 backdrop-blur-md p-8 border border-white/5">
       <h1 className="text-2xl font-bold text-white">Location Tracker</h1>
 
       <button
@@ -169,6 +188,7 @@ export default function LocateAdmin() {
           Broadcasting live
         </div>
       )}
+      </div>
     </div>
   )
 }

@@ -1,32 +1,23 @@
 import { useState, useCallback } from 'react'
-import { BrowserProvider } from 'ethers'
+import { BrowserProvider, isAddress } from 'ethers'
 import { claimConnection } from '../lib/firebase'
+import useENS from '../hooks/useENS'
 
 type Status = 'idle' | 'connecting' | 'claiming' | 'success' | 'already_claimed' | 'error'
 
 export default function ConnectPage() {
+  const ens = useENS('wieedze.eth')
   const [status, setStatus] = useState<Status>('idle')
   const [address, setAddress] = useState('')
+  const [manualAddress, setManualAddress] = useState('')
   const [txHash, setTxHash] = useState('')
   const [error, setError] = useState('')
 
-  const connect = useCallback(async () => {
-    if (!window.ethereum) {
-      setError('No wallet found. Please open in MetaMask browser.')
-      setStatus('error')
-      return
-    }
-
+  const claim = useCallback(async (addr: string) => {
+    setAddress(addr)
+    setStatus('claiming')
     try {
-      setStatus('connecting')
-      const provider = new BrowserProvider(window.ethereum)
-      const signer = await provider.getSigner()
-      const addr = await signer.getAddress()
-      setAddress(addr)
-
-      setStatus('claiming')
       const result = await claimConnection(addr)
-
       if (result.alreadyClaimed) {
         setStatus('already_claimed')
       } else {
@@ -40,18 +31,60 @@ export default function ConnectPage() {
     }
   }, [])
 
+  const connect = useCallback(async () => {
+    if (!window.ethereum) {
+      setError('No wallet found. Use the manual input below.')
+      setStatus('error')
+      return
+    }
+
+    try {
+      setStatus('connecting')
+      const provider = new BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+      const addr = await signer.getAddress()
+      await claim(addr)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong'
+      setError(msg)
+      setStatus('error')
+    }
+  }, [claim])
+
+  const submitManual = useCallback(() => {
+    const trimmed = manualAddress.trim()
+    if (!isAddress(trimmed)) {
+      setError('Invalid Ethereum address')
+      setStatus('error')
+      return
+    }
+    claim(trimmed)
+  }, [manualAddress, claim])
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
-      <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center">
+    <div className="min-h-screen flex items-center justify-center px-6 relative">
+      <a
+        href="#"
+        className="absolute top-6 left-6 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-medium hover:bg-white/10 hover:text-white transition-all"
+      >
+        &larr; Back
+      </a>
+      <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center rounded-2xl bg-black/60 backdrop-blur-md p-8 border border-white/5">
 
         {/* Idle — connect button */}
         {status === 'idle' && (
           <>
-            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-              <svg className="w-10 h-10 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.928-1.153a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.342" />
-              </svg>
-            </div>
+            {ens.avatar ? (
+              <img
+                src={ens.avatar}
+                alt={ens.name}
+                className="w-20 h-20 rounded-full object-cover border border-white/10"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-2xl font-bold text-white/40">
+                W
+              </div>
+            )}
             <h1 className="text-2xl font-bold text-white">Connect with Wieedze</h1>
             <p className="text-white/40 text-sm leading-relaxed">
               Tap below to connect your wallet and receive on-chain proof that you met wieedze.eth at EthCC.
@@ -62,6 +95,29 @@ export default function ConnectPage() {
             >
               Connect Wallet
             </button>
+
+            <div className="w-full flex items-center gap-3">
+              <div className="flex-1 h-px bg-white/10" />
+              <span className="text-white/30 text-xs">or paste your address</span>
+              <div className="flex-1 h-px bg-white/10" />
+            </div>
+
+            <div className="w-full flex gap-2">
+              <input
+                type="text"
+                placeholder="0x..."
+                value={manualAddress}
+                onChange={(e) => setManualAddress(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submitManual()}
+                className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-white/30"
+              />
+              <button
+                onClick={submitManual}
+                className="px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/15 transition-all"
+              >
+                Go
+              </button>
+            </div>
           </>
         )}
 
