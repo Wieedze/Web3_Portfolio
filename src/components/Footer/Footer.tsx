@@ -13,7 +13,7 @@ export default function Footer() {
 
         <div className="flex gap-4">
           <a
-            href="https://x.com/0xSofia3"
+            href="https://x.com/MoodzMaxime"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl border border-white/10 bg-[#111111]/90 text-base text-white/80 hover:bg-[#161616]/90 hover:border-white/20 transition-all"
