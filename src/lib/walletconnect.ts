@@ -6,7 +6,8 @@ export async function getWalletConnectProvider() {
 
   const provider = await EthereumProvider.init({
     projectId,
-    chains: [1],
+    chains: [1, 8453],
+    optionalChains: [1, 8453],
     showQrModal: true,
     metadata: {
       name: 'Wieedze Portfolio',

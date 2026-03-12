@@ -78,7 +78,6 @@ export default function ConnectPage() {
   // Auto-trigger WalletConnect on mobile (no window.ethereum)
   useEffect(() => {
     if (!window.ethereum && status === 'idle') {
-      // Small delay to let the page render first
       const timer = setTimeout(() => connect(), 800)
       return () => clearTimeout(timer)
     }
