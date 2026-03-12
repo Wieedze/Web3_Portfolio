@@ -1,14 +1,16 @@
 # wieedze.eth — Web3 Portfolio
 
-Personal portfolio with live ENS resolution, project showcase, and real-time location sharing for conferences.
+Personal portfolio with on-chain connections, live ENS resolution, project showcase, and real-time location sharing for conferences.
 
 **Live:** [wieedze.github.io/Web3_Portfolio](https://wieedze.github.io/Web3_Portfolio/)
 
 ## Features
 
+- **On-chain Connection** — Visitors scan a QR code and connect their wallet (WalletConnect or manual input) to receive on-chain proof they met wieedze.eth at EthCC, via the Intuition protocol
 - **ENS Profile** — Resolves `wieedze.eth` avatar and name dynamically via ensdata.net
 - **Project Showcase** — Glassmorphism cards with favicons, links, and tags
-- **Live Location** — "Meet me at EthCC" button opens a real-time map (Firebase + Leaflet) showing your GPS position at the conference
+- **Live Location** — Real-time map (Firebase + Leaflet) showing GPS position at conferences
+- **QR Code Page** — Fullscreen QR code to display on your phone for easy scanning
 - **Animated Background** — Three.js pixel blast effect
 - **Fully Responsive** — Mobile-first design
 
@@ -18,32 +20,42 @@ Personal portfolio with live ENS resolution, project showcase, and real-time loc
 |-------|------|
 | Framework | React 19, TypeScript, Vite 7 |
 | Styling | Tailwind CSS 4, Framer Motion |
+| Wallet | WalletConnect, ethers.js v6 |
 | 3D | Three.js, Postprocessing |
 | Maps | Leaflet, React Leaflet |
-| Backend | Firebase Realtime Database |
+| Backend | Firebase (Realtime DB + Cloud Functions) |
+| On-chain | Intuition Protocol (SofiaFeeProxy) |
 | Deploy | GitHub Pages (Actions) |
 
 ## Getting Started
 
 ```bash
 pnpm install
-cp .env.example .env   # fill in your Firebase keys
+cp .env.example .env   # fill in your keys
 pnpm dev
 ```
 
-## Live Location
+## On-chain Connection
 
-The portfolio includes a real-time location feature for conferences:
+Visitors at EthCC can connect with you on-chain:
 
-1. Visitors click **"Meet me at EthCC"** → a map modal shows your live position
-2. You open `yoursite.com/#locate` on your phone → enter your PIN → start GPS tracking
-3. Your position is broadcast in real-time via Firebase to all visitors
+1. You show the QR code page (`#qr`) on your phone
+2. They scan it → opens `#connect` on their phone
+3. WalletConnect auto-triggers (or they paste their address manually)
+4. A Firebase Cloud Function deposits into the Intuition triple vault on their behalf
+5. They receive on-chain shares proving they met wieedze.eth
 
 ### Setup
 
-1. Create a Firebase project with Realtime Database
-2. Add your Firebase config to `.env` (see `.env.example`)
-3. Set a secret `VITE_LOCATE_PIN` for the admin page
+1. Get a WalletConnect Project ID at [cloud.reown.com](https://cloud.reown.com)
+2. Deploy the Firebase Cloud Function in `functions/`
+3. Add all secrets to `.env` (see below)
+
+## Live Location
+
+1. Visitors click **"Meet me at EthCC"** → a map modal shows your live position
+2. You open `#locate` on your phone → enter PIN → start GPS tracking
+3. Your position is broadcast in real-time via Firebase
 
 ## Deployment
 
@@ -51,11 +63,14 @@ Deployed automatically via GitHub Actions on push to `master`.
 
 ### GitHub Secrets required
 
-- `VITE_FIREBASE_API_KEY`
-- `VITE_FIREBASE_AUTH_DOMAIN`
-- `VITE_FIREBASE_DATABASE_URL`
-- `VITE_FIREBASE_PROJECT_ID`
-- `VITE_LOCATE_PIN`
+| Secret | Description |
+|--------|-------------|
+| `VITE_FIREBASE_API_KEY` | Firebase API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `VITE_FIREBASE_DATABASE_URL` | Realtime Database URL |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_LOCATE_PIN` | Admin PIN for location tracking |
+| `VITE_WALLETCONNECT_PROJECT_ID` | WalletConnect project ID from cloud.reown.com |
 
 Set them in **Settings → Secrets and variables → Actions**.
 
@@ -72,7 +87,13 @@ src/
 ├── data/projects.ts                 # Project definitions
 ├── hooks/useENS.ts                  # ENS resolution hook
 ├── lib/firebase.ts                  # Firebase config + helpers
-└── pages/LocateAdmin.tsx            # Phone GPS tracker (admin)
+├── lib/walletconnect.ts             # WalletConnect provider init
+├── pages/
+│   ├── ConnectPage.tsx              # Wallet connection + on-chain claim
+│   ├── LocateAdmin.tsx              # Phone GPS tracker (admin)
+│   └── QRPage.tsx                   # Fullscreen QR code display
+functions/
+└── src/index.ts                     # Cloud Function: claimConnection
 ```
 
 ## License
