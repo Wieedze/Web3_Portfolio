@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { BrowserProvider, isAddress } from 'ethers'
 import { claimConnection } from '../lib/firebase'
+import { getWalletConnectProvider } from '../lib/walletconnect'
 import useENS from '../hooks/useENS'
 
 type Status = 'idle' | 'connecting' | 'claiming' | 'success' | 'already_claimed' | 'error'
@@ -32,20 +33,33 @@ export default function ConnectPage() {
   }, [])
 
   const connect = useCallback(async () => {
-    if (!window.ethereum) {
-      setError('No wallet found. Use the manual input below.')
-      setStatus('error')
-      return
-    }
-
     try {
       setStatus('connecting')
-      const provider = new BrowserProvider(window.ethereum)
+
+      let eip1193Provider: import('ethers').Eip1193Provider
+
+      if (window.ethereum) {
+        eip1193Provider = window.ethereum
+      } else {
+        eip1193Provider = await getWalletConnectProvider()
+      }
+
+      const provider = new BrowserProvider(eip1193Provider)
       const signer = await provider.getSigner()
       const addr = await signer.getAddress()
+
+      // Disconnect WalletConnect session after getting address
+      if (!window.ethereum && 'disconnect' in eip1193Provider) {
+        (eip1193Provider as { disconnect: () => void }).disconnect()
+      }
+
       await claim(addr)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Something went wrong'
+      if (msg.includes('User rejected') || msg.includes('Connection request reset')) {
+        setStatus('idle')
+        return
+      }
       setError(msg)
       setStatus('error')
     }
@@ -61,6 +75,15 @@ export default function ConnectPage() {
     claim(trimmed)
   }, [manualAddress, claim])
 
+  // Auto-trigger WalletConnect on mobile (no window.ethereum)
+  useEffect(() => {
+    if (!window.ethereum && status === 'idle') {
+      // Small delay to let the page render first
+      const timer = setTimeout(() => connect(), 800)
+      return () => clearTimeout(timer)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 relative">
       <a
@@ -71,7 +94,7 @@ export default function ConnectPage() {
       </a>
       <div className="flex flex-col items-center gap-6 w-full max-w-sm text-center rounded-2xl bg-black/60 backdrop-blur-md p-8 border border-white/5">
 
-        {/* Idle — connect button */}
+        {/* Idle — connect button + manual input always visible */}
         {status === 'idle' && (
           <>
             {ens.avatar ? (
@@ -126,6 +149,12 @@ export default function ConnectPage() {
           <>
             <div className="w-16 h-16 rounded-full border-2 border-white/20 border-t-white animate-spin" />
             <p className="text-white/60">Connecting wallet...</p>
+            <button
+              onClick={() => setStatus('idle')}
+              className="text-white/30 text-xs hover:text-white/60 transition-colors underline"
+            >
+              Cancel &mdash; enter address manually instead
+            </button>
           </>
         )}
 
